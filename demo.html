@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CertTracker - Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #fafafa;
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+        
+        .stat-card {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1976d2;
+            margin: 0.5rem 0;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .competency-tier {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .tier-badge {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        .tier-gold {
+            background: #ffd700;
+            color: #333;
+        }
+        
+        .tier-silver {
+            background: #c0c0c0;
+            color: #333;
+        }
+        
+        .tier-bronze {
+            background: #cd7f32;
+        }
+        
+        .tier-platinum {
+            background: #e5e4e2;
+            color: #333;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #1976d2;
+            transition: width 0.3s ease;
+        }
+        
+        .cert-list {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .cert-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #1976d2;
+        }
+        
+        .cert-vendor {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #1976d2;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .cert-info {
+            flex: 1;
+        }
+        
+        .cert-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .cert-details {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .status-chip {
+            padding: 0.25rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: white;
+        }
+        
+        .status-active {
+            background: #2e7d32;
+        }
+        
+        .status-expiring {
+            background: #ed6c02;
+        }
+        
+        .status-expired {
+            background: #d32f2f;
+        }
+        
+        .search-section {
+            margin: 2rem 0;
+        }
+        
+        .search-bar {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .search-bar:focus {
+            outline: none;
+            border-color: #1976d2;
+        }
+        
+        .filter-chips {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-chip {
+            padding: 0.5rem 1rem;
+            background: #e3f2fd;
+            color: #1976d2;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .filter-chip:hover {
+            background: #bbdefb;
+        }
+        
+        .filter-chip.active {
+            background: #1976d2;
+            color: white;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .material-icons {
+            font-size: 1.2rem;
+            vertical-align: middle;
+        }
+        
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: #1976d2;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1565c0;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏆 CertTracker - Certification Management System</h1>
+    </div>
+
+    <div class="container">
+        <!-- Welcome Section -->
+        <div class="card" style="margin-bottom: 2rem;">
+            <h2>Welcome back, John Smith! 👋</h2>
+            <div class="competency-tier">
+                <div class="tier-badge tier-gold">GOLD</div>
+                <div>
+                    <div><strong>Current Tier: Gold</strong></div>
+                    <div style="color: #666; font-size: 0.9rem;">Total Points: 75</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%;"></div>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #666;">25 points to Platinum tier</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Stats -->
+        <div class="dashboard-grid">
+            <div class="card stat-card">
+                <span class="material-icons" style="font-size: 2rem; color: #1976d2;">certificate</span>
+                <div class="stat-value">12</div>
+                <div class="stat-label">Total Certifications</div>
+            </div>
+            <div class="card stat-card">
+                <span class="material-icons" style="font-size: 2rem; color: #2e7d32;">trending_up</span>
+                <div class="stat-value">10</div>
+                <div class="stat-label">Active Certifications</div>
+            </div>
+            <div class="card stat-card">
+                <span class="material-icons" style="font-size: 2rem; color: #ed6c02;">warning</span>
+                <div class="stat-value">2</div>
+                <div class="stat-label">Expiring Soon</div>
+            </div>
+            <div class="card stat-card">
+                <span class="material-icons" style="font-size: 2rem; color: #dc004e;">emoji_events</span>
+                <div class="stat-value">3</div>
+                <div class="stat-label">Bonus Eligible</div>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <h2 class="section-title">🔍 Advanced Search & Filters</h2>
+            <div class="card">
+                <input type="text" class="search-bar" placeholder="Search certifications, vendors, or team members..." value="AWS Solutions Architect">
+                <div class="filter-chips">
+                    <div class="filter-chip active">All Vendors</div>
+                    <div class="filter-chip">AWS</div>
+                    <div class="filter-chip">Microsoft</div>
+                    <div class="filter-chip">Google Cloud</div>
+                    <div class="filter-chip">Active Only</div>
+                    <div class="filter-chip">Expiring Soon</div>
+                    <div class="filter-chip">Bonus Eligible</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="two-column">
+            <!-- Recent Certifications -->
+            <div>
+                <h2 class="section-title">📜 Recent Certifications</h2>
+                <div class="card">
+                    <div class="cert-list">
+                        <div class="cert-item">
+                            <div class="cert-vendor">AWS</div>
+                            <div class="cert-info">
+                                <div class="cert-name">AWS Solutions Architect Professional</div>
+                                <div class="cert-details">AWS • Professional Level • Dec 15, 2023</div>
+                            </div>
+                            <div class="status-chip status-active">ACTIVE</div>
+                        </div>
+                        <div class="cert-item">
+                            <div class="cert-vendor" style="background: #00a1c9;">MS</div>
+                            <div class="cert-info">
+                                <div class="cert-name">Azure Administrator Associate</div>
+                                <div class="cert-details">Microsoft • Associate Level • Nov 8, 2023</div>
+                            </div>
+                            <div class="status-chip status-active">ACTIVE</div>
+                        </div>
+                        <div class="cert-item">
+                            <div class="cert-vendor" style="background: #4285f4;">GCP</div>
+                            <div class="cert-info">
+                                <div class="cert-name">Google Cloud Professional Cloud Architect</div>
+                                <div class="cert-details">Google Cloud • Professional Level • Oct 22, 2023</div>
+                            </div>
+                            <div class="status-chip status-expiring">EXPIRING</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expiring Soon -->
+            <div>
+                <h2 class="section-title">⚠️ Expiring Soon</h2>
+                <div class="card">
+                    <div class="alert alert-warning">
+                        <span class="material-icons">notifications</span>
+                        <span>2 certifications expire within 30 days</span>
+                    </div>
+                    <div class="cert-list">
+                        <div class="cert-item">
+                            <div class="cert-vendor" style="background: #4285f4;">GCP</div>
+                            <div class="cert-info">
+                                <div class="cert-name">Google Cloud Professional Cloud Architect</div>
+                                <div class="cert-details">Expires: Jan 22, 2024 (15 days)</div>
+                            </div>
+                            <div class="status-chip status-expiring">15 DAYS</div>
+                        </div>
+                        <div class="cert-item">
+                            <div class="cert-vendor" style="background: #326ce5;">K8s</div>
+                            <div class="cert-info">
+                                <div class="cert-name">Certified Kubernetes Administrator</div>
+                                <div class="cert-details">Expires: Feb 5, 2024 (29 days)</div>
+                            </div>
+                            <div class="status-chip status-expiring">29 DAYS</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 1rem;">
+                        <span class="material-icons">notifications</span>
+                        Configure Teams Alerts
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature Highlights -->
+        <div style="margin-top: 3rem;">
+            <h2 class="section-title">✨ Key Features Implemented</h2>
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>🎯 Competency Tiers</h3>
+                    <p style="color: #666; margin: 0.5rem 0;">Visual badges with Bronze, Silver, Gold, Platinum levels based on certification points.</p>
+                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                        <div class="tier-badge tier-bronze" style="width: 30px; height: 30px; font-size: 0.6rem;">BR</div>
+                        <div class="tier-badge tier-silver" style="width: 30px; height: 30px; font-size: 0.6rem;">SI</div>
+                        <div class="tier-badge tier-gold" style="width: 30px; height: 30px; font-size: 0.6rem;">GO</div>
+                        <div class="tier-badge tier-platinum" style="width: 30px; height: 30px; font-size: 0.6rem;">PL</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>📊 Microsoft Teams Integration</h3>
+                    <p style="color: #666; margin: 0.5rem 0;">Rich notifications with action buttons sent directly to Teams channels.</p>
+                    <button class="btn btn-primary" style="margin-top: 1rem;">
+                        <span class="material-icons">chat</span>
+                        Test Teams Alert
+                    </button>
+                </div>
+                <div class="card">
+                    <h3>🏆 Bonus Tracking</h3>
+                    <p style="color: #666; margin: 0.5rem 0;">Automatic detection and tracking of bonus-eligible certifications for HR/Finance.</p>
+                    <div style="margin-top: 1rem; color: #2e7d32;">
+                        <strong>3 bonuses pending approval</strong>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>🗺️ Career Roadmaps</h3>
+                    <p style="color: #666; margin: 0.5rem 0;">Interactive tree-based visualization of certification paths with prerequisites.</p>
+                    <button class="btn btn-primary" style="margin-top: 1rem;">
+                        <span class="material-icons">timeline</span>
+                        View Roadmap
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tech Stack -->
+        <div class="card" style="margin-top: 2rem; text-align: center;">
+            <h3>🛠️ Technology Stack</h3>
+            <p style="color: #666; margin: 1rem 0;">
+                <strong>Backend:</strong> Node.js + TypeScript + Express + PostgreSQL + Prisma<br>
+                <strong>Frontend:</strong> React + TypeScript + Material-UI + React Query<br>
+                <strong>Integrations:</strong> Microsoft Teams API + Email Service + AWS S3
+            </p>
+            <p style="color: #1976d2; font-weight: 500; margin-top: 1rem;">
+                Enterprise-ready solution for 20-100 engineer teams
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactivity
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Simulate progress animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500);
+            });
+        });
+
+        // Add hover effects to cards
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-2px)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+[
+  {
+    "id": "assigned-cert-1750713089011",
+    "userId": "2",
+    "certification": {
+      "id": "cm-1",
+      "name": "CompTIA Security+",
+      "vendor": {
+        "name": "CompTIA",
+        "logoUrl": null
+      },
+      "level": "ENTRY",
+      "pointsValue": 12,
+      "isBonusEligible": false,
+      "validityMonths": 36,
+      "description": "Entry-level cybersecurity certification covering network security, compliance, threats and vulnerabilities."
+    },
+    "obtainedDate": "2025-06-23",
+    "expirationDate": "2028-06-23",
+    "status": "ACTIVE",
+    "bonusClaimed": false,
+    "assignedDate": "2025-06-23",
+    "assignedBy": "1",
+    "deadline": "2025-12-31",
+    "bonusEligible": true,
+    "bonusAmount": 500,
+    "notes": "123",
+    "assignmentId": "assignment-1750713089011",
+    "masterCertificationId": "cm-1",
+    "certificateNumber": "123",
+    "verificationUrl": "123123",
+    "certificateFileUrl": null,
+    "submittedDate": "2025-06-23T21:16:37.283Z",
+    "approvedDate": "2025-06-23T21:16:47.095Z",
+    "approvedBy": "admin@certtracker.com",
+    "adminComments": ""
+  },
+  {
+    "id": "assigned-cert-1750719974929",
+    "userId": "2",
+    "certification": {
+      "id": "cm-3",
+      "name": "Certified Ethical Hacker",
+      "vendor": {
+        "name": "EC-Council",
+        "logoUrl": null
+      },
+      "level": "PROFESSIONAL",
+      "pointsValue": 25,
+      "isBonusEligible": true,
+      "validityMonths": 36,
+      "description": "Professional ethical hacking and penetration testing certification."
+    },
+    "obtainedDate": "",
+    "expirationDate": "",
+    "status": "ADMIN_ASSIGNED",
+    "bonusClaimed": false,
+    "assignedDate": "2025-06-23",
+    "assignedBy": "1",
+    "deadline": "2025-06-28",
+    "bonusEligible": true,
+    "bonusAmount": 500,
+    "notes": "Assigned by admin on 6/23/2025",
+    "assignmentId": "assignment-1750719974929",
+    "masterCertificationId": "cm-3"
+  },
+  {
+    "id": "assigned-cert-1750720024699",
+    "userId": "2",
+    "certification": {
+      "id": "cm-1750720016344",
+      "name": "Test2",
+      "vendor": {
+        "name": "test2",
+        "logoUrl": null
+      },
+      "level": "EXPERT",
+      "pointsValue": 30,
+      "isBonusEligible": false,
+      "validityMonths": 36,
+      "description": "test2"
+    },
+    "obtainedDate": "2025-06-23",
+    "expirationDate": "2028-06-23",
+    "status": "ACTIVE",
+    "bonusClaimed": false,
+    "assignedDate": "2025-06-23",
+    "assignedBy": "1",
+    "deadline": null,
+    "bonusEligible": false,
+    "bonusAmount": 0,
+    "notes": "123123",
+    "assignmentId": "assignment-1750720024699",
+    "masterCertificationId": "cm-1750720016344",
+    "certificateNumber": "123",
+    "verificationUrl": "123",
+    "certificateFileUrl": null,
+    "submittedDate": "2025-06-23T23:08:06.824Z",
+    "approvedDate": "2025-06-23T23:08:43.329Z",
+    "approvedBy": "admin@certtracker.com",
+    "adminComments": "yes"
+  }
+]

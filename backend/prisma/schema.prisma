@@ -1,0 +1,235 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String   @id @default(uuid())
+  email            String   @unique
+  firstName        String   @map("first_name")
+  lastName         String   @map("last_name")
+  password         String
+  role             UserRole @default(ENGINEER)
+  department       String?
+  competencyTier   String?  @map("competency_tier")
+  competencyScores Json?    @map("competency_scores")
+  isActive         Boolean  @default(true) @map("is_active")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  userCertifications    UserCertification[]
+  alertConfigurations   AlertConfiguration?
+  notificationLogs      NotificationLog[]
+  
+  @@map("users")
+}
+
+model Vendor {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+  websiteUrl  String? @map("website_url")
+  logoUrl     String? @map("logo_url")
+  isActive    Boolean @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  certifications       Certification[]
+  vendorRequirements   VendorRequirement[]
+  competencyTiers      CompetencyTier[]
+  
+  @@map("vendors")
+}
+
+model Certification {
+  id                String   @id @default(uuid())
+  vendorId          String   @map("vendor_id")
+  name              String
+  code              String   @unique
+  level             CertificationLevel
+  description       String?
+  pointsValue       Int      @default(0) @map("points_value")
+  isBonusEligible   Boolean  @default(false) @map("is_bonus_eligible")
+  bonusAmount       Decimal? @map("bonus_amount")
+  validityMonths    Int      @map("validity_months")
+  prerequisites     Json?
+  tierContribution  String?  @map("tier_contribution")
+  difficultyLevel   DifficultyLevel @map("difficulty_level")
+  isActive          Boolean  @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  vendor             Vendor @relation(fields: [vendorId], references: [id])
+  userCertifications UserCertification[]
+  
+  @@map("certifications")
+}
+
+model UserCertification {
+  id                String   @id @default(uuid())
+  userId            String   @map("user_id")
+  certificationId   String   @map("certification_id")
+  obtainedDate      DateTime @map("obtained_date")
+  expirationDate    DateTime @map("expiration_date")
+  certificateNumber String?  @map("certificate_number")
+  verificationUrl   String?  @map("verification_url")
+  certificateFileUrl String? @map("certificate_file_url")
+  status            CertificationStatus @default(ACTIVE)
+  bonusClaimed      Boolean  @default(false) @map("bonus_claimed")
+  bonusPaidDate     DateTime? @map("bonus_paid_date")
+  notes             Json?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user           User @relation(fields: [userId], references: [id])
+  certification  Certification @relation(fields: [certificationId], references: [id])
+  notificationLogs NotificationLog[]
+  
+  @@unique([userId, certificationId])
+  @@map("user_certifications")
+}
+
+model VendorRequirement {
+  id                    String  @id @default(uuid())
+  vendorId              String  @map("vendor_id")
+  partnershipTier       String  @map("partnership_tier")
+  description           String?
+  requiredCertsMapping  Json    @map("required_certs_mapping")
+  minEngineersRequired  Int     @map("min_engineers_required")
+  isActive              Boolean @default(true) @map("is_active")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  vendor Vendor @relation(fields: [vendorId], references: [id])
+  
+  @@map("vendor_requirements")
+}
+
+model CompetencyTier {
+  id                  String  @id @default(uuid())
+  tierName            String  @map("tier_name")
+  tierColor           String  @map("tier_color")
+  minPointsRequired   Int     @map("min_points_required")
+  requiredCertTypes   Json    @map("required_cert_types")
+  badgeIcon           String? @map("badge_icon")
+  description         String?
+  vendorId            String? @map("vendor_id")
+  isActive            Boolean @default(true) @map("is_active")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  vendor Vendor? @relation(fields: [vendorId], references: [id])
+  
+  @@map("competency_tiers")
+}
+
+model CertificationPath {
+  id                String  @id @default(uuid())
+  pathName          String  @map("path_name")
+  targetRole        String  @map("target_role")
+  description       String?
+  treeStructure     Json    @map("tree_structure")
+  prerequisitesMap  Json    @map("prerequisites_map")
+  estimatedMonths   Int     @map("estimated_months")
+  isActive          Boolean @default(true) @map("is_active")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  
+  @@map("certification_paths")
+}
+
+model AlertConfiguration {
+  id                    String  @id @default(uuid())
+  userId                String  @unique @map("user_id")
+  notificationChannels  Json    @map("notification_channels")
+  alertTiming           Json    @map("alert_timing")
+  emailEnabled          Boolean @default(true) @map("email_enabled")
+  teamsEnabled          Boolean @default(false) @map("teams_enabled")
+  teamsWebhook          String? @map("teams_webhook")
+  daysBeforeExpiration  Int     @default(30) @map("days_before_expiration")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+  
+  @@map("alert_configurations")
+}
+
+model NotificationLog {
+  id                  String   @id @default(uuid())
+  userId              String   @map("user_id")
+  userCertificationId String?  @map("user_certification_id")
+  notificationType    NotificationType @map("notification_type")
+  channel             NotificationChannel
+  sentAt              DateTime @map("sent_at")
+  delivered           Boolean  @default(false)
+  messageContent      String?  @map("message_content")
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user               User @relation(fields: [userId], references: [id])
+  userCertification  UserCertification? @relation(fields: [userCertificationId], references: [id])
+  
+  @@map("notification_logs")
+}
+
+// Enums
+enum UserRole {
+  ENGINEER
+  MANAGER
+  ADMIN
+  HR
+}
+
+enum CertificationLevel {
+  FOUNDATION
+  ASSOCIATE
+  PROFESSIONAL
+  EXPERT
+  SPECIALTY
+}
+
+enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum CertificationStatus {
+  ACTIVE
+  EXPIRING_SOON
+  EXPIRED
+  INACTIVE
+  PENDING_APPROVAL
+  ADMIN_ASSIGNED
+  REJECTED
+}
+
+enum NotificationType {
+  EXPIRATION_WARNING
+  EXPIRED_CERT
+  BONUS_ELIGIBLE
+  COMPLIANCE_ALERT
+  CAREER_RECOMMENDATION
+}
+
+enum NotificationChannel {
+  EMAIL
+  TEAMS
+  IN_APP
+}
